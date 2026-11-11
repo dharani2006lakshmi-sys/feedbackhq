@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>All Feedback — FeedbackHQ</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+  <nav class="navbar">
+    <a class="navbar-brand" href="{{ '/dashboard' if session.get('role') == 'admin' else '/submit' }}">Feedback<span>HQ</span></a>
+    <div class="navbar-links">
+      {% if session.get('role') == 'admin' %}
+        <a href="/dashboard">Dashboard</a>
+      {% endif %}
+      <a href="/submit">Submit</a>
+      <a href="/feedback" class="active">{{ 'All Feedback' if session.get('role') == 'admin' else 'My Feedback' }}</a>
+      <span class="role-pill">{{ session.get('role', 'user') }}</span>
+      <a href="/logout" class="btn-logout">Logout</a>
+    </div>
+  </nav>
+
+  <div class="page-wrapper">
+
+    <div class="page-header">
+      <h1>{{ 'All' if session.get('role') == 'admin' else 'My' }} <span class="highlight">Feedback</span></h1>
+      <p>{{ 'Search and review every submission.' if session.get('role') == 'admin' else 'Search and track feedback you submitted.' }}</p>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% for category, message in messages %}
+        <div class="flash flash-{{ category }}">{{ message }}</div>
+      {% endfor %}
+    {% endwith %}
+
+    <div class="filter-bar">
+      <input type="text" id="tableSearch" placeholder="Search product, user, or comment…">
+      <select id="ratingFilter">
+        <option value="">All Ratings</option>
+        <option value="5">5 Stars</option>
+        <option value="4">4 Stars</option>
+        <option value="3">3 Stars</option>
+        <option value="2">2 Stars</option>
+        <option value="1">1 Star</option>
+      </select>
+      <a href="/submit" class="action-btn primary-action">+ Submit New</a>
+    </div>
+
+    <div class="card">
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Product</th>
+              <th>User</th>
+              <th>Rating</th>
+              <th>Comment</th>
+              <th>Date</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in items %}
+            <tr>
+              <td>{{ item.product }}</td>
+              <td>{{ item.username }}</td>
+              <td class="rating-val">{{ item.rating }}</td>
+              <td>{{ item.comment }}</td>
+              <td>{{ item.date }}</td>
+              <td class="status-val">{{ item.status }}</td>
+            </tr>
+            {% else %}
+            <tr>
+              <td colspan="6" style="text-align:center;color:var(--muted);">No feedback submitted yet.</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="{{ url_for('static', filename='main.js') }}"></script>
+</body>
+</html>

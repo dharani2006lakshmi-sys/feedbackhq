@@ -1,0 +1,74 @@
+{% set is_admin = (login_mode == 'admin') %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ 'Admin Login' if is_admin else 'User Login' }} — FeedbackHQ</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+  <div class="auth-wrapper">
+    <div class="auth-card">
+
+      <div class="auth-tabs">
+        <a href="/login" class="auth-tab {{ '' if is_admin else 'active' }}">User Login</a>
+        <a href="/admin/login" class="auth-tab {{ 'active' if is_admin else '' }}">Admin Login</a>
+      </div>
+
+      <div class="auth-logo">FeedbackHQ</div>
+      <div class="auth-subtitle">
+        {{ 'Sign in to the admin analytics dashboard' if is_admin else 'Sign in to submit and track your feedback' }}
+      </div>
+
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for category, message in messages %}
+          <div class="flash flash-{{ category }}">{{ message }}</div>
+        {% endfor %}
+      {% endwith %}
+
+      <form method="POST" action="{{ '/admin/login' if is_admin else '/login' }}">
+        <div class="form-group">
+          <label for="email">{{ 'Admin Email' if is_admin else 'User Email' }}</label>
+          <input type="email" id="email" name="email" placeholder="{{ 'admin@feedbackhq.com' if is_admin else 'you@example.com' }}" required>
+        </div>
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" name="password" placeholder="••••••••" required>
+        </div>
+        <button type="submit" class="btn btn-primary">
+          {{ 'Sign In as Admin →' if is_admin else 'Sign In as User →' }}
+        </button>
+      </form>
+
+      <div class="demo-box">
+        <div class="demo-meta">
+          <span class="demo-label">{{ 'Demo Admin' if is_admin else 'Demo User' }}</span>
+          {% if is_admin %}
+            <code>admin@feedbackhq.com</code> · <code>admin1234</code>
+          {% else %}
+            <code>user@feedbackhq.com</code> · <code>user1234</code>
+          {% endif %}
+        </div>
+        <button
+          type="button"
+          class="btn-demo"
+          id="fillDemoBtn"
+          data-email="{{ 'admin@feedbackhq.com' if is_admin else 'user@feedbackhq.com' }}"
+          data-password="{{ 'admin1234' if is_admin else 'user1234' }}"
+        >Fill Demo</button>
+      </div>
+
+      {% if not is_admin %}
+      <div class="auth-footer">
+        Don't have an account? <a href="/register">Create one here</a>
+      </div>
+      {% endif %}
+
+    </div>
+  </div>
+
+  <script src="{{ url_for('static', filename='main.js') }}"></script>
+</body>
+</html>

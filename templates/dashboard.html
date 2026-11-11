@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard — FeedbackHQ</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+  <nav class="navbar">
+    <a class="navbar-brand" href="/dashboard">Feedback<span>HQ</span></a>
+    <div class="navbar-links">
+      <a href="/dashboard" class="active">Dashboard</a>
+      <a href="/submit">Submit</a>
+      <a href="/feedback">All Feedback</a>
+      <span class="role-pill">admin</span>
+      <a href="/logout" class="btn-logout">Logout</a>
+    </div>
+  </nav>
+
+  <div class="page-wrapper">
+
+    <div class="page-header">
+      <h1>Welcome back, <span class="highlight">{{ username }}</span></h1>
+      <p>Overview of submitted product feedback.</p>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% for category, message in messages %}
+        <div class="flash flash-{{ category }}">{{ message }}</div>
+      {% endfor %}
+    {% endwith %}
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-label">Total Feedback</div>
+        <div class="stat-value" data-count="{{ total }}">{{ total }}</div>
+        <div class="stat-icon">💬</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Average Rating</div>
+        <div class="stat-value" data-count="{{ avg_rating }}">{{ avg_rating }}</div>
+        <div class="stat-icon">★</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Positive</div>
+        <div class="stat-value" data-count="{{ positive_count }}">{{ positive_count }}</div>
+        <div class="stat-icon">👍</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Negative</div>
+        <div class="stat-value" data-count="{{ negative_count }}">{{ negative_count }}</div>
+        <div class="stat-icon">👎</div>
+      </div>
+    </div>
+
+    <div class="action-bar">
+      <a href="/submit" class="action-btn primary-action">+ Submit Feedback</a>
+      <a href="/feedback" class="action-btn">View All Feedback →</a>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Recent Feedback</div>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Product</th>
+              <th>User</th>
+              <th>Rating</th>
+              <th>Comment</th>
+              <th>Date</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in recent %}
+            <tr>
+              <td>{{ item.product }}</td>
+              <td>{{ item.username }}</td>
+              <td class="rating-val">{{ item.rating }}</td>
+              <td>{{ item.comment }}</td>
+              <td>{{ item.date }}</td>
+              <td class="status-val">{{ item.status }}</td>
+            </tr>
+            {% else %}
+            <tr>
+              <td colspan="6" style="text-align:center;color:var(--muted);">No feedback yet. Submit the first one!</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="{{ url_for('static', filename='main.js') }}"></script>
+</body>
+</html>
